@@ -1,12 +1,3 @@
-FROM ubuntu
-
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-RUN apt-get update && apt-get install ffmpeg -y
-
-command : docker run --rm -w '/usr/src/app' -v ~/Documents/MyBackup/Innovation/MydockVideoTesting/videos/:/usr/src/app/videos -v ~/Documents/MyBackup/Innovation/MydockVideoTesting/ffmpeg_exp/results/:/usr/src/app/results -v ~/Documents/MyBackup/Innovation/MydockVideoTesting/ffmpeg_exp/:/usr/src/app/ -it swarnkardocker/ffmpeg /bin/bash
-
 # extract all the frames from the video:
 ffmpeg -i "videos/sample-video.mp4" -t 300 -vf select="eq(pict_type\,PICT_TYPE_I)" -vsync 2 -s 160x90 -f image2 results/thumbnails-%02d.jpeg -loglevel debug 2>&1| for /f "tokens=4,8,9 delims=. " %d in ('findstr "pict_type:I"') do echo %d %e.%f>>"keyframe_list.txt"
 
