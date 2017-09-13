@@ -1,0 +1,7 @@
+*.txt
+*.png
+*.log
+*.md
+.git
+.DS_Store
+*.json
