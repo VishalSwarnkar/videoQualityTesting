@@ -1,11 +1,16 @@
 #!/bin/bash
 
-if [ $# -eq 2 ]
+if [ $# -ne 2 ]
 then
-  echo "Hello"
-else
-  echo "retry"
+  echo "Please pass 2 video paths"
+  exit 1
 fi
+
+if [[ ! -e /results ]]; then
+  mkdir results/video0
+  mkdir results/video1
+fi
+
 
 video_count=`expr $#`
 frame_count=122 || ls *.mp4 | sed -e 's/.*\.//' | uniq -c | awk {'print $1'}
