@@ -26,12 +26,18 @@ for videos in "$@"; do
 
   echo "Total frame from video 01: $totalFrameFromVod01"
 
-  $(ffmpeg -i "$videos" -t $totalFrameFromVod01 -vf "drawtext=fontfile=/usr/share/fonts/TTF/Vera.ttf: text='%{pts\:hms}': x=(w-tw)/2: y=h-(2*lh): fontcolor=white: box=1: boxcolor=0x00000000@1" ./results/video$((video_count))/image%01d.png)
+  #$(ffmpeg -i "$videos" -t $totalFrameFromVod01 -vf "drawtext=fontfile=/usr/share/fonts/TTF/Vera.ttf: text='%{pts\:hms}': x=(w-tw)/2: y=h-(2*lh): fontcolor=white: box=1: boxcolor=0x00000000@1" ./results/video$((video_count))/image%01d.png)
 
-  $(ffmpeg -i results/video01/image"$value".png -i results/video02/image"$value".png -lavfi  psnr="stats_file=results/psnr.log" -f null -)
+  $(ffmpeg -i "$videos" -vf "drawtext=fontfile=/usr/share/fonts/TTF/Vera.ttf: text='%{pts\:hms}': x=(w-tw)/2: y=h-(2*lh): fontcolor=white: box=1: boxcolor=0x00000000@1" ./results/video$((video_count))/image%03d.png)
+
+  $(ffprobe -f lavfi -i "movie=$videos,fps=fps=25[out0]" -show_frames -show_entries frame=pkt_pts_time -of csv=p=0 > results/frames-$((video_count)).txt)
 done
 
-for value in $(seq 1 $frame_count);
-do
-  $(ffmpeg -i results/video0/image"$value".png -i results/video1/image"$value".png -lavfi  psnr="stats_file=results/psnr-$value.log" -f null -)
-done
+$(ffmpeg -i $VIDEO1 -i $VIDEO2 -lavfi  psnr="stats_file=results/psnr.log" -f null -)
+
+echo "Difference in the frames is there is any: "
+$(diff -u frames-0.txt frames-1.txt)
+# for value in $(seq 1 $frame_count);
+# do
+#   $(ffmpeg -i results/video0/image"$value".png -i results/video1/image"$value".png -lavfi  psnr="stats_file=results/psnr-$value.log" -f null -)
+# done
