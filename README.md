@@ -1,5 +1,8 @@
+
 # Command to execute
-docker run --rm -w '/usr/src/app' -v $PWD/ffmpeg_exp/:/usr/src/app/ -e VIDEO1=/usr/src/app/videos/OriginalVOD.mp4 -e VIDEO2=/usr/src/app/videos/MissingFrameVod.mp4 -it ffmpeg
+docker run --rm -w '/usr/src/app' -v $PWD/ffmpeg_exp/:/usr/src/app/ -e VIDEO1=/usr/src/app/videos/OriginalVOD.mp4 -e VIDEO2=/usr/src/app/videos/MissingFrameVod.mp4 -it videoqualitytesting
+
+## Below are few other commands for reference:
 
 # extract all the frames from the video:
 ffmpeg -i "videos/sample-video.mp4" -t 300 -vf select="eq(pict_type\,PICT_TYPE_I)" -vsync 2 -s 160x90 -f image2 results/thumbnails-%02d.jpeg -loglevel debug 2>&1| for /f "tokens=4,8,9 delims=. " %d in ('findstr "pict_type:I"') do echo %d %e.%f>>"keyframe_list.txt"
