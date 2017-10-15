@@ -14,14 +14,17 @@ https://stackoverflow.com/questions/25774996/how-to-compare-show-the-difference-
 
 cat logfile | grep -oP 'frame=\d+' | tail -1 | sed 's/[^0-9]*//g'
 
-# Extract the all the frames with the time stamp on top of it
-ffmpeg -i videos/OriginalVOD_modified.mp4 -vf "drawtext=fontfile=/usr/share/fonts/TTF/Vera.ttf: text='%{pts\:hms}': x=(w-tw)/2: y=h-(2*lh): fontcolor=white: box=1: boxcolor=0x00000000@1" image%03d.png
+# Command to over lay timestamp in the every frames
+$ ffmpeg -i videos/OriginalVOD_modified.mp4 -vf "drawtext=fontfile=/usr/share/fonts/TTF/Vera.ttf: text='%{pts\:hms}': x=(w-tw)/2: y=h-(2*lh): fontcolor=white: box=1: boxcolor=0x00000000@1" image%03d.png
+
+# Command to over lay frame numbers in every frames
+$ ffmpeg -i videos/OriginalVOD_modified.mp4 -vf "drawtext=fontfile=Arial.ttf: text=%{n}: x=(w-tw)/2: y=h-(2*lh): fontcolor=white: box=1: boxcolor=0x00000099" ./results/video0/image%03d.png
 
 # Extract the frames based on frame rate
-ffmpeg -i input -vf "drawtext=fontfile=/usr/share/fonts/TTF/Vera.ttf: timecode='00\:00\:00\:00': r=25: x=(w-tw)/2: y=h-(2*lh): fontcolor=white: box=1: boxcolor=0x00000000@1" image%03d.png
+$ ffmpeg -i input -vf "drawtext=fontfile=/usr/share/fonts/TTF/Vera.ttf: timecode='00\:00\:00\:00': r=25: x=(w-tw)/2: y=h-(2*lh): fontcolor=white: box=1: boxcolor=0x00000000@1" image%03d.png
 
 # Extract every seconds frames
-ffmpeg -i videos/OriginalVOD_modified.mp4 -r 1 -t 10 -vf "drawtext=fontfile=/usr/share/fonts/TTF/Vera.ttf: text='%{pts\:hms}': x=(w-tw)/2: y=h-(2*lh): fontcolor=white: box=1: boxcolor=0x00000000@1" image%03d.png
+$ ffmpeg -i videos/OriginalVOD_modified.mp4 -r 1 -t 10 -vf "drawtext=fontfile=/usr/share/fonts/TTF/Vera.ttf: text='%{pts\:hms}': x=(w-tw)/2: y=h-(2*lh): fontcolor=white: box=1: boxcolor=0x00000000@1" image%03d.png
 
 # Extract the duration of the frame in text file
 ffprobe -f lavfi -i "movie=OriginalVOD_modified.mp4,fps=fps=25[out0]" -show_frames -show_entries frame=pkt_pts_time -of csv=p=0 > frames.txt
@@ -30,3 +33,11 @@ ffprobe -f lavfi -i "movie=OriginalVOD_modified.mp4,fps=fps=25[out0]" -show_fram
 ls image-*.png | sort -n -t - -k 2
 
 paste images.txt frames.txt > combined.txt
+
+## Set up tesseract to read the text from give file
+
+$apt-get install imagemagick
+$apt-get install tesseract-ocr
+
+$convert results/video0/image001.png results/image001.tif
+$tesseract results/image003.tiff output -psm 0
